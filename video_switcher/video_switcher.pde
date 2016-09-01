@@ -21,37 +21,65 @@
  */
 
 import processing.video.Movie;
+import processing.serial.*; //import the Serial library
+
+int end = 10;    // the number 10 is ASCII for linefeed (end of serial.println), later we will look for this to break up individual messages
+String serial;   // declare a new string called 'serial' . A string is a sequence of characters (data type know as "char")
+Serial port;  // The serial port, this is a new instance of the Serial class (an Object)
  
-static final int QTYL = 10;  // quantity, total number of videos in the LEFT array
+static final int QTYL = 6;  // quantity, total number of videos in the LEFT array
 final Movie[] moviesLeft = new Movie[QTYL];  // setting up an array for LEFT-side videos with (QTYL) items
 static int indexLeft;
 
-static final int QTYR = 10;  // quantity, total number of videos in the RIGHT array
+static final int QTYR = 6;  // quantity, total number of videos in the RIGHT array
 final Movie[] moviesRight = new Movie[QTYR];  // setting up an array for RIGHT-side videos with (QTYR) items
 static int indexRight;
- 
+
+static final int QTYB = 6;  
+final Movie[] moviesBoth = new Movie[QTYB]; 
+static int indexBoth;
+
 void setup() { 
+/*
+  port = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
+  port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
+  serial = port.readStringUntil(end); // function that reads the string from serial port until a println and then assigns string to our string variable (called 'serial')
+  serial = null; // initially, the string will be null (empty)
+*/
+
   size(960, 540, JAVA2D);
   frameRate(24);
   noSmooth();  // helps cut down on framerate issues
 
   // Loads videos into respective arrays
-  for (int i = 0; i < 10; i++){
+  for (int i = 0; i < 6; i++){
     moviesLeft[i] = new Movie(this, ("left" + i + ".mov"));
     moviesRight[i] = new Movie(this, ("right" + i + ".mov"));
-  }
+    moviesBoth[i] = new Movie(this, ("both" + i + ".mov"));
+}
   // Stops all videos from autoplaying at once
-  for (int i = 0; i < 10; i++){
+  for (int i = 0; i < 6; i++){
     moviesLeft[i].stop();
     moviesRight[i].stop();
+    moviesBoth[i].stop();
+
   }
   // Makes videos auto-replay when theyre finished 
   moviesLeft[indexLeft].loop();  
   moviesRight[indexRight].loop();
+  moviesBoth[indexBoth].loop();
 }
 void draw() { 
   background(0);
-  
+/*  
+   while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
+    serial = port.readStringUntil(end);
+  }
+    if (serial != null) {
+      String[] a = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
+      println(a[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
+    }
+*/  
   //prints currently active/playing videos in the console
   println((indexLeft) + " " + (indexRight));
   
@@ -71,6 +99,18 @@ void draw() {
     fill(255,0,0);;
     rect(20,20,10,10);
   }
+ /* 
+  //fixes video seam lag but heavy on GPU
+  if (indexLeft == 1 && indexRight == 1) {
+    moviesLeft[indexLeft].pause();
+    moviesRight[indexRight].pause();
+    set(0,0,moviesBoth[1] );
+    moviesBoth[1].loop();
+    rect(50,50,50,50);
+  }
+  */
+  
+  
 } 
 void movieEvent(Movie m) { 
   m.read(); 
@@ -108,7 +148,7 @@ static final int getMovieIndexLeft(int k) {
   default: 
     return indexRight;
   } 
-}
+  }
 void keyPressed() {
   
   // left video switcher
@@ -128,7 +168,7 @@ void keyPressed() {
   // single button cycling for left videos (reassign imput to big red button)
     if (keyCode == LEFT) {
       // dont touch this part; needed to reset when end of array is reached
-      if (indexLeft < 5) {
+      if (indexLeft < 6) {
         indexLeft++;
       } else {
           indexLeft = 0;
@@ -137,7 +177,7 @@ void keyPressed() {
     // single button cycling for right videos (reassign imput to big red button)
     if (keyCode == RIGHT) {
       // dont touch this part; needed to reset when end of array is reached
-      if (indexRight < 5) {
+      if (indexRight < 6) {
         indexRight++;
       } else {
           indexRight = 0;
