@@ -12,17 +12,22 @@ Movie firstClipMovie;
 
 
 void setup() {
-   size (1100, 600);
+   size (960, 540);
 
-  for (int i = 0; i < myMovies.length; i ++ ) {
-    myMovies[i] = new Movie(this, "alwaysSunny.mov");
-  }
+  //for (int i = 0; i < myMovies.length; i ++ ) {
+    myMovies[1] = new Movie(this, "1.mov");
+    myMovies[2] = new Movie(this, "2.mov");
+    myMovies[3] = new Movie(this, "3.mov");
+    myMovies[4] = new Movie(this, "4.mov");
+    myMovies[5] = new Movie(this, "5.mov");
+    myMovies[6] = new Movie(this, "0.mov");
+  //}
 
-  firstClipMovie = new Movie(this, "naruto.mov");
+  firstClipMovie = new Movie(this, "alwaysSunny.mov");
   firstClipMovie.loop();
 
   moviesPlaying.add(firstClipMovie);
-  moviePos. add(new PVector (0, 0));
+  moviePos. add(new PVector (480, 0));
 
   background(0);
 }
@@ -54,10 +59,10 @@ void draw() {
     if (m.available())
       m.read();
 
-    image(m, x, y);
+    image(m, 0, 0, (width/2), height);
   }
   
   //frameRate
  
-  surface.setTitle("fps" + frameRate);
+  frame.setTitle("fps" + frameRate);
 }
