@@ -1,3 +1,5 @@
+// THE WORLDS SHITTIES CODE
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -5,26 +7,24 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-/* Splitscreen Video Switcher v10
- * Jeff Paletta 2016
- */
-
-
 import processing.video.Movie;
 import processing.serial.*;
 import processing.sound.*;
 
+import processing.serial.*; 
 
-int end = 10; 
-String serial;  
-Serial port;  
-
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Serial myPort;  // Create object from Serial class
+String val;     // Data received from the serial port
+String convertedDataFromRFID;
+String load;
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 AudioPlayer[] player = new AudioPlayer[6];
 Minim minim;
 //FFT fft; 
-float val; 
-int val2; 
+float valTwo; 
+int valTwo2; 
 int bufferSize = 8; 
 int fftSize = floor(bufferSize*.9)+1; 
 int count=0; 
@@ -42,15 +42,17 @@ static final int QTYB = 2;
 final Movie[] moviesBoth = new Movie[QTYB]; 
 
 void setup() { 
-  
-  port = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
-   port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
-   serial = port.readStringUntil(end); // function that reads the string from serial port until a println and then assigns string to our string variable (called 'serial')
-   serial = null; // initially, the string will be null (empty)
+
 
   size(1920, 1080, JAVA2D);
   frameRate(24);
   noSmooth();  
+
+  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&  
+  printArray(Serial.list());
+  String portName = Serial.list()[11]; //change the 0 to a 1 or 2 etc. to match your port
+  myPort = new Serial(this, portName, 1200);
+  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
   for (int i = 0; i < 2; i++) {
     moviesLeft[i] = new Movie(this, ("video_left_" + i + ".mov"));
@@ -67,7 +69,7 @@ void setup() {
   moviesLeft[indexLeft].loop();  
   moviesRight[indexRight].loop();
   moviesBoth[indexLeft].loop();
- 
+
 
   minim = new Minim(this);
   for (int i = 0; i < 2; i++) {
@@ -80,32 +82,18 @@ void draw() {
 
 
   //print(player);
-  
-   while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
-   serial = port.readStringUntil('\n');
-   }
-   //if (serial != null) {
-   //String[] a = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
-   println(serial); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
-   
-   if (serial == "2_LOW") {
-     fill(0);
-     rect(100,100,100,100);
-   }
-   
-   
-  //println((indexLeft) + " " + (indexRight));
+
+
+  println((indexLeft) + " " + (indexRight));
 
   set(0, 0, moviesLeft[indexLeft] ); 
   set(960, 0, moviesRight[indexRight] ); 
-  
-  player[indexLeft].play();
-  player[indexRight].play();
 
-  if (indexLeft != indexRight) {
-    fill(255, 0, 0);
-    rect(20, 20, 10, 10);
-}  
+  player[indexLeft].play();
+  player[indexRight].play();    
+    
+ 
+
   if ((indexLeft == 0) && (indexRight == 0)) {
     player[0].play();
     player[1].pause();
@@ -118,7 +106,7 @@ void draw() {
     image(moviesBoth[0], 0, 0, 1920, 1080);
     moviesBoth[0].loop();
     moviesBoth[0].play();
-}
+  }
 
   if ((indexLeft == 1) && (indexRight == 1)) {
     player[1].play();
@@ -132,9 +120,9 @@ void draw() {
     image(moviesBoth[1], 0, 0, 1920, 1080);
     //moviesBoth[1].loop();
     moviesBoth[1].play();
-}
+  }
 
-if ((indexLeft == 1) && (indexRight == 0)) {
+  if ((indexLeft == 1) && (indexRight == 0)) {
     player[1].play();
     player[0].play();
     moviesLeft[1].loop();
@@ -145,12 +133,12 @@ if ((indexLeft == 1) && (indexRight == 0)) {
     moviesRight[0].play();
     moviesBoth[0].stop();
     moviesBoth[1].stop();
-}
-    
-    if ((indexLeft == 0) && (indexRight == 1)) {
-     moviesBoth[1].stop();
+  }
+
+  if ((indexLeft == 0) && (indexRight == 1)) {
+    moviesBoth[1].stop();
     moviesBoth[0].stop();
-      player[1].play();
+    player[1].play();
     player[0].play();
     moviesLeft[0].loop();
     moviesLeft[0].play();
@@ -158,8 +146,71 @@ if ((indexLeft == 1) && (indexRight == 0)) {
     moviesRight[0].stop();
     moviesRight[1].loop();
     moviesRight[1].play();
-    
+  }
+
+  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+  if ( myPort.available() > 0) 
+  {  // If data is available,
+    val = myPort.readStringUntil('\n');         // read it and store it in val
+  }
+  if (val != null ) {
+    val = trim(val);
+    println(val); 
+
+
+    if (val.equals ("7_HIGH")) {
+      myPort.write('1');
+      println("1");
+      if (indexLeft < 1) {
+        indexLeft++;
+      } else {
+        indexLeft = 0;
+      }
+      for (int i = 0; i <1; i++) {
+        player[i].pause();
+        player[i].rewind();
+      }
+      player[indexRight].play();
+    }
+
+
+
+
+    if (val.equals("2_HIGH")) {
+     myPort.write('1');
+     println("1");
+      if (indexRight < 1) {
+        indexRight++;
+      } else {
+        indexRight = 0;
+      }
+    }
+  }
+
+
+/*if (keyCode == LEFT) {
+  if (indexLeft < 1) {
+    indexLeft++;
+  } else {
+    indexLeft = 0;
+  }
+  for (int i = 0; i <1; i++) {
+    player[i].pause();
+    player[i].rewind();
+  }
+  player[indexRight].play();
 }
+if (keyCode == RIGHT) {
+  if (indexRight < 1) {
+    indexRight++;
+  } else {
+    indexRight = 0;
+  }
+}*/
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
 }
 
 void movieEvent(Movie m) { 
@@ -222,12 +273,10 @@ void keyPressed() {
   }
 
   if (keyCode == LEFT) {
-    if ( serial == "2_HIGH" ) {
     if (indexLeft < 1) {
       indexLeft++;
     } else {
       indexLeft = 0;
-    }
     }
     for (int i = 0; i <1; i++) {
       player[i].pause();
@@ -236,7 +285,6 @@ void keyPressed() {
     player[indexRight].play();
   }
   if (keyCode == RIGHT) {
-    if ( serial == "7_HIGH" ) {
     if (indexRight < 1) {
       indexRight++;
     } else {
@@ -248,6 +296,5 @@ void keyPressed() {
   }
   if (keyCode == DOWN) {
     indexRight = indexLeft;
-  }
   }
 }
