@@ -21,6 +21,11 @@
  */
 
 import processing.video.Movie;
+import processing.serial.*; //import the Serial library
+
+int end = 10;    // the number 10 is ASCII for linefeed (end of serial.println), later we will look for this to break up individual messages
+String serial;   // declare a new string called 'serial' . A string is a sequence of characters (data type know as "char")
+Serial port;  // The serial port, this is a new instance of the Serial class (an Object)
  
 static final int QTYL = 10;  // quantity, total number of videos in the LEFT array
 final Movie[] moviesLeft = new Movie[QTYL];  // setting up an array for LEFT-side videos with (QTYL) items
@@ -31,17 +36,22 @@ final Movie[] moviesRight = new Movie[QTYR];  // setting up an array for RIGHT-s
 static int indexRight;
  
 void setup() { 
+  //port = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
+  //port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
+  //serial = port.readStringUntil(end); // function that reads the string from serial port until a println and then assigns string to our string variable (called 'serial')
+ // serial = null; // initially, the string will be null (empty)
+
   size(960, 540, JAVA2D);
-  //frameRate(24);
-  //noSmooth();  // helps cut down on framerate issues
+  frameRate(24);
+  noSmooth();  // helps cut down on framerate issues
 
   // Loads videos into respective arrays
-  for (int i = 0; i < 2; i++){
+  for (int i = 0; i < 6; i++){
     moviesLeft[i] = new Movie(this, ("left" + i + ".mov"));
     moviesRight[i] = new Movie(this, ("right" + i + ".mov"));
   }
   // Stops all videos from autoplaying at once
-  for (int i = 0; i < 2; i++){
+  for (int i = 0; i < 6; i++){
     moviesLeft[i].stop();
     moviesRight[i].stop();
   }
@@ -52,15 +62,27 @@ void setup() {
 void draw() { 
   background(0);
   
+ /*  while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
+    serial = port.readStringUntil(end);
+  }
+    if (serial != null) {
+      String[] a = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
+      println(a[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)
+      
+    }
+  */
   //prints currently active/playing videos in the console
   println((indexLeft) + " " + (indexRight));
   
   // draw the left side video on left side of screen
-  image(moviesRight[indexRight], 480,0); 
-  image(moviesLeft[indexLeft],0,0 ); 
+  set(0,0,moviesLeft[indexLeft] ); 
 
   // draw the right side video on right side of screen
-
+  set(480,0,moviesRight[indexRight] ); 
+  //image(films[0],0,0);
+  //image(films[1],0,0);
+  //image(films[2],0,0);
+  
   // checks if the videos match up
   if (indexLeft != indexRight) {
     
@@ -125,7 +147,7 @@ void keyPressed() {
   // single button cycling for left videos (reassign imput to big red button)
     if (keyCode == LEFT) {
       // dont touch this part; needed to reset when end of array is reached
-      if (indexLeft < 2) {
+      if (indexLeft < 5) {
         indexLeft++;
       } else {
           indexLeft = 0;
@@ -134,7 +156,7 @@ void keyPressed() {
     // single button cycling for right videos (reassign imput to big red button)
     if (keyCode == RIGHT) {
       // dont touch this part; needed to reset when end of array is reached
-      if (indexRight < 2) {
+      if (indexRight < 5) {
         indexRight++;
       } else {
           indexRight = 0;
