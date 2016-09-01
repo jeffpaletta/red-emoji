@@ -1,68 +1,55 @@
 import processing.video.*;
 
-int maxMovies= 6;
-int rand = int(random(maxMovies)); 
-
-Movie[] myMovies=new Movie[maxMovies] ;
-
-ArrayList<PVector> moviePos      = new ArrayList<PVector>();
-ArrayList<Movie>   moviesPlaying = new ArrayList<Movie>();
-
-Movie firstClipMovie;
-
+int maxmyMovies = 6; // Total # of movies
+int  = 1; // Initial movie to be displayed is the first
+Movie[] myMovies = new Movie[maxmyMovies]; //array of movies
 
 void setup() {
-   size (960, 540);
 
-  //for (int i = 0; i < myMovies.length; i ++ ) {
-    myMovies[1] = new Movie(this, "1.mov");
-    myMovies[2] = new Movie(this, "2.mov");
-    myMovies[3] = new Movie(this, "3.mov");
-    myMovies[4] = new Movie(this, "4.mov");
-    myMovies[5] = new Movie(this, "5.mov");
-    myMovies[6] = new Movie(this, "0.mov");
-  //}
-
-  firstClipMovie = new Movie(this, "alwaysSunny.mov");
-  firstClipMovie.loop();
-
-  moviesPlaying.add(firstClipMovie);
-  moviePos. add(new PVector (480, 0));
-
-  background(0);
-}
+  size(640,480);
 
 
 
-void mouseReleased() {
-  rand = int(random(maxMovies));
-
-  //store position
-  moviePos.add(new PVector(mouseX, mouseY));
-
-  // loop movie and add to playing list 
-  moviesPlaying.add(myMovies[rand]);
-  moviesPlaying.get(moviesPlaying.size()-1).loop();
-}
-
-void draw() {
-  background(0);
-  tint(255, 155);
-
-  for (int i = 0; i< moviesPlaying.size(); i++ ) {    
-    // temp vars to keep things neat :)
-    Movie m = moviesPlaying.get(i);
-    float x = moviePos.get(i).x;
-    float y = moviePos.get(i).y;
-
-    
-    if (m.available())
-      m.read();
-
-    image(m, 0, 0, (width/2), height);
+  // Loading the movies into the array
+  // Don't forget to put the .mov files in the data folder!
+  for (int i = 1; i < myMovies.length; i ++ ) {
+    myMovies[i] = new Movie(this, i + ".mov");
+    //myMovies.read();
+    myMovies[i].loop();
   }
   
-  //frameRate
- 
-  frame.setTitle("fps" + frameRate);
+  // peliculas ();
 }
+
+
+
+void draw() {
+
+
+image(myMovies[1],0,0, 320, 480); 
+
+/*//println ((pan) );
+  if (key == 'q') {
+    image(myMovies[1],0,0, 400, 400);
+  }
+
+  else if (key == 'w') {
+    image(myMovies[2],0,0, 400, 400);
+  }
+  if (key == 'e') {
+    image(myMovies[3],0,0, 400, 400);
+  }
+  
+  if (key == 'f'){
+   // peliculas ();
+  }*/
+  
+  
+}
+
+
+
+/*void peliculas (){
+// image(myMovies[int(random (myMovies.length))],0,0, 400, 400);
+ return myMovies [int(random (myMovies.length))];
+}*/
