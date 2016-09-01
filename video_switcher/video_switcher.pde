@@ -16,8 +16,8 @@ import processing.sound.*;
 
 
 int end = 10; 
-String serial;  
-Serial port;  
+String val;  
+Serial myPort;  
 
 
 AudioPlayer[] player = new AudioPlayer[6];
@@ -40,16 +40,16 @@ static int indexRight = 0;
 
 static final int QTYB = 2; 
 final Movie[] moviesBoth = new Movie[QTYB]; 
-//static int indexRight = 0;
-
 
 void setup() { 
-  /*
-  port = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
-   port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
+  
+   myPort = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
+   //port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
    serial = port.readStringUntil(end); // function that reads the string from serial port until a println and then assigns string to our string variable (called 'serial')
    serial = null; // initially, the string will be null (empty)
-   */
+   
+   String portName = Serial.list()[5] ;
+   myPort = new Serial(this, portName, 2400);
 
   size(1920, 1080, JAVA2D);
   frameRate(24);
@@ -83,40 +83,92 @@ void draw() {
 
 
   //print(player);
-  /*  
-   while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
+  
+   /*while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
    serial = port.readStringUntil(end);
    }
    if (serial != null) {
-   String[] a = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
-   println(a[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
+   String[] dumb = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
+   println(dumb[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
+   if (dumb[0] == "7_LOW") {
+     rect(100,100,100,100);
+   }*/
+   if (myPort.avaliable() > 0) {
+     val = myPort.readStringUntil('\n');
+     println(val);
+   
    }
-   */
+   
   println((indexLeft) + " " + (indexRight));
 
   set(0, 0, moviesLeft[indexLeft] ); 
   set(960, 0, moviesRight[indexRight] ); 
+  
   player[indexLeft].play();
   player[indexRight].play();
 
   if (indexLeft != indexRight) {
     fill(255, 0, 0);
     rect(20, 20, 10, 10);
+}  
+if (serial == "2_LOW") {
+  rect(50,50,50,50);
+}
+
+  if ((indexLeft == 0) && (indexRight == 0)) {
     player[0].play();
-    player[1].play();
-    
-  }
-  
-  if (indexLeft == indexRight){
-    player[0].pause();
     player[1].pause();
-    player[indexLeft].play();
-    moviesLeft[indexLeft].stop();
-    moviesRight[indexRight].stop();
-    moviesBoth[indexLeft].loop();
-    moviesBoth[indexLeft].play();
-    image(moviesBoth[indexLeft], 0, 0, 1920,1080);
-  }
+    player[1].rewind();
+    moviesLeft[0].stop();
+    moviesLeft[1].stop();
+    moviesRight[0].stop();
+    moviesRight[1].stop();
+    moviesBoth[1].stop();
+    image(moviesBoth[0], 0, 0, 1920, 1080);
+    moviesBoth[0].loop();
+    moviesBoth[0].play();
+}
+
+  if ((indexLeft == 1) && (indexRight == 1)) {
+    player[1].play();
+    player[0].pause();
+    player[0].rewind();
+    moviesLeft[1].stop();
+    moviesLeft[0].stop();
+    moviesRight[1].stop();
+    moviesRight[0].stop();
+    moviesBoth[0].stop();
+    image(moviesBoth[1], 0, 0, 1920, 1080);
+    //moviesBoth[1].loop();
+    moviesBoth[1].play();
+}
+
+if ((indexLeft == 1) && (indexRight == 0)) {
+    player[1].play();
+    player[0].play();
+    moviesLeft[1].loop();
+    moviesLeft[1].play();
+    moviesLeft[0].stop();
+    moviesRight[1].stop();
+    moviesRight[0].loop();
+    moviesRight[0].play();
+    moviesBoth[0].stop();
+    moviesBoth[1].stop();
+}
+    
+    if ((indexLeft == 0) && (indexRight == 1)) {
+     moviesBoth[1].stop();
+    moviesBoth[0].stop();
+      player[1].play();
+    player[0].play();
+    moviesLeft[0].loop();
+    moviesLeft[0].play();
+    moviesLeft[1].stop();
+    moviesRight[0].stop();
+    moviesRight[1].loop();
+    moviesRight[1].play();
+    
+}
 }
 
 void movieEvent(Movie m) { 
@@ -159,7 +211,6 @@ static final int getMovieIndexRight(int u) {
     return indexRight;
   }
 }
-
 
 void keyPressed() {
 
