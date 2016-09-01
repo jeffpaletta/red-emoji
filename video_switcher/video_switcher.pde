@@ -16,8 +16,8 @@ import processing.sound.*;
 
 
 int end = 10; 
-String val;  
-Serial myPort;  
+String serial;  
+Serial port;  
 
 
 AudioPlayer[] player = new AudioPlayer[6];
@@ -43,13 +43,10 @@ final Movie[] moviesBoth = new Movie[QTYB];
 
 void setup() { 
   
-   myPort = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
-   //port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
+  port = new Serial(this, Serial.list()[9], 9600); // initializing the object by assigning a port and baud rate (must match that of Arduino)
+   port.clear();  // function from serial library that throws out the first reading, in case we started reading in the middle of a string from Arduino
    serial = port.readStringUntil(end); // function that reads the string from serial port until a println and then assigns string to our string variable (called 'serial')
    serial = null; // initially, the string will be null (empty)
-   
-   String portName = Serial.list()[5] ;
-   myPort = new Serial(this, portName, 2400);
 
   size(1920, 1080, JAVA2D);
   frameRate(24);
@@ -84,22 +81,20 @@ void draw() {
 
   //print(player);
   
-   /*while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
-   serial = port.readStringUntil(end);
+   while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
+   serial = port.readStringUntil('\n');
    }
-   if (serial != null) {
-   String[] dumb = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
-   println(dumb[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
-   if (dumb[0] == "7_LOW") {
+   //if (serial != null) {
+   //String[] a = split(serial, ',');  //a new array (called 'a') that stores values into separate cells (separated by commas specified in your Arduino program)
+   println(serial); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
+   
+   if (serial == "2_LOW") {
+     fill(0);
      rect(100,100,100,100);
-   }*/
-   if (myPort.avaliable() > 0) {
-     val = myPort.readStringUntil('\n');
-     println(val);
-   
    }
    
-  println((indexLeft) + " " + (indexRight));
+   
+  //println((indexLeft) + " " + (indexRight));
 
   set(0, 0, moviesLeft[indexLeft] ); 
   set(960, 0, moviesRight[indexRight] ); 
@@ -111,10 +106,6 @@ void draw() {
     fill(255, 0, 0);
     rect(20, 20, 10, 10);
 }  
-if (serial == "2_LOW") {
-  rect(50,50,50,50);
-}
-
   if ((indexLeft == 0) && (indexRight == 0)) {
     player[0].play();
     player[1].pause();
@@ -231,10 +222,12 @@ void keyPressed() {
   }
 
   if (keyCode == LEFT) {
+    if ( serial == "2_HIGH" ) {
     if (indexLeft < 1) {
       indexLeft++;
     } else {
       indexLeft = 0;
+    }
     }
     for (int i = 0; i <1; i++) {
       player[i].pause();
@@ -243,6 +236,7 @@ void keyPressed() {
     player[indexRight].play();
   }
   if (keyCode == RIGHT) {
+    if ( serial == "7_HIGH" ) {
     if (indexRight < 1) {
       indexRight++;
     } else {
@@ -254,5 +248,6 @@ void keyPressed() {
   }
   if (keyCode == DOWN) {
     indexRight = indexLeft;
+  }
   }
 }
