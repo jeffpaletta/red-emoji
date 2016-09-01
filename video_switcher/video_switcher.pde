@@ -1,37 +1,65 @@
-import processing.video.*;
+import codeanticode.gsvideo.*;
 
-int numMovies = 4;//total number of movies
-Movie[] playlist = new Movie[numMovies];//a list of all the movie objects, currently not initialized
-int currentMovieIndex = 0;//index of the movie currently playing
+//import fullscreen.*; 
+//import processing.opengl.*;
 
-float movieEndDuration = 0.029719;//a 'magic number' helpful to find out when a movie finishes playing
+GSMovie[] movies = new GSMovie[5];
 
-void setup(){
-  size(800,500);
-  for(int i = 0 ; i < numMovies; i++){
-    //initialize each movie object in the list
-    playlist[i] = new Movie(this,"transit.mov"); new Movie(this, "ch"+(i+1)+".mp4");
-  }
-  //start playback
-  playlist[currentMovieIndex].play();
+GSMovie alwaysSunny;
+
+//GSMovie bg_movie = new GSMovie;
+
+//SoftFullScreen fs; 
+
+int w = 640;
+int h = 480;
+int threshold = 80;
+
+boolean find = true;
+
+
+void setup() {
+
+  size(960, 540, P2D); ///checken zonder p2d
+
+
+ // fs = new SoftFullScreen(this, 1); 
+
+  // enter fullscreen mode
+  //fs.enter();
+
+
+
+  alwaysSunny = new GSMovie(this, "alwaysSunny.mov");
+  
+  movies[0] = new GSMovie(this, "dareDevil.mov");
+  movies[1] = new GSMovie(this, "ferrisBueller.mov");
+  movies[2] = new GSMovie(this, "naruto.mov");
+  movies[3] = new GSMovie(this, "pumpingIron.mov");
+  movies[4] = new GSMovie(this, "kitchenNightmares.mov");
+
+
+println(movies[0].width+" "+movies[0].height);
+
+  alwaysSunny.loop();
+
+  movies[0].play();
+  movies[1].play();
+  movies[2].play();
+  movies[3].play();
+  movies[4].play();
+  
+   // movies[0].goToBeginning();
+    //movies[0].pause();
+    //movies[1].goToBeginning();
+    //movies[2].goToBeginning();
+    //movies[3].goToBeginning();
+   // movies[4].goToBeginning();
+ 
+  
+  
 }
 
-void draw(){
-  background(0);
-  image(playlist[currentMovieIndex],0,0);
-}
-
-void movieEvent(Movie m){
-  m.read();
-  //handy for debugging and figuring out the 'magic number'
-  println(m.time() + " / " + m.duration() + " / " + (m.time() + movieEndDuration));
-  //hacky check movie end 
-  if((m.time() + movieEndDuration) >= m.duration()){
-      println("movie at index " + currentMovieIndex + " finished playback");
-      //go to the next movie index
-      currentMovieIndex = (currentMovieIndex+1) % numMovies;//increment by one buy use % to loop back to index 0 when the end of the movie array is reached
-      //use this to tell the next movie in the list to play
-      playlist[currentMovieIndex].play();
-      println("movie at index " + currentMovieIndex + " started");
-  }
+void movieEvent(GSMovie movies) {
+  movies.read();
 }
