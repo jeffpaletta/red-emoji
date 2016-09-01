@@ -1,81 +1,37 @@
-import codeanticode.gsvideo.*;
-import oscP5.*; // import oscP5 Library
-import netP5.*; // import netP5 Library (part of oscP5 Library)
+import processing.video.*;
 
-OscP5 osculator;
-GSMovie playerLeft;
-GSMovie playerRight;
+int numMovies = 4;//total number of movies
+Movie[] playlist = new Movie[numMovies];//a list of all the movie objects, currently not initialized
+int currentMovieIndex = 0;//index of the movie currently playing
 
-//global variables
-int direction;
+float movieEndDuration = 0.029719;//a 'magic number' helpful to find out when a movie finishes playing
 
-//boolean pressUp;
-//boolean pressRight;
-//boolean pressLeft;
+void setup(){
+  size(800,500);
+  for(int i = 0 ; i < numMovies; i++){
+    //initialize each movie object in the list
+    playlist[i] = new Movie(this,"transit.mov"); new Movie(this, "ch"+(i+1)+".mp4");
+  }
+  //start playback
+  playlist[currentMovieIndex].play();
+}
 
-public void setup() {
-  size(1280, 720);
+void draw(){
   background(0);
-  
- /* // osculator setup
-  osculator = new OscP5(this, 9000);
-  osculator.plug(this, "buttonLeft", "/wii/1/button/Left");
-  osculator.plug(this, "buttonRight", "/wii/1/button/Right");
-  osculator.plug(this, "buttonUp", "/wii/1/button/Up");
-  */
-
-  // GSvideo setup
-  playerLeft = new GSMovie(this, "alwaysSunny.mov");
-  playerRight = new GSMovie(this, "naruto.mov");
-  playerLeft.loop();
-  playerRight.loop();
+  image(playlist[currentMovieIndex],0,0);
 }
 
-void draw() {
-  image(playerLeft, 0, 0, 640, 720);
-  image(playerRight, 640, 0, 640, 720);
-  
-/*    if (pressLeft){
-  buttonLeft();
+void movieEvent(Movie m){
+  m.read();
+  //handy for debugging and figuring out the 'magic number'
+  println(m.time() + " / " + m.duration() + " / " + (m.time() + movieEndDuration));
+  //hacky check movie end 
+  if((m.time() + movieEndDuration) >= m.duration()){
+      println("movie at index " + currentMovieIndex + " finished playback");
+      //go to the next movie index
+      currentMovieIndex = (currentMovieIndex+1) % numMovies;//increment by one buy use % to loop back to index 0 when the end of the movie array is reached
+      //use this to tell the next movie in the list to play
+      playlist[currentMovieIndex].play();
+      println("movie at index " + currentMovieIndex + " started");
   }
- 
-  if (pressRight){
-  buttonRight();
-  }
-
-  if (pressUp){
-  buttonUp();
-  }
-
-*/
 }
-// THIS KEY PRESS WORKS FINE
-void keyPressed() {
-  if (key == '1') {  playerLeft = new GSMovie (this, "alwaysSunny.mov");
-  playerLeft.play();
-} 
-  if (key == '2') {  playerLeft = new GSMovie (this, "dareDevil.mov");}
-  if (key == '3') {  playerLeft = new GSMovie (this, "naruto.mov");}
-  if (key == '7') {  playerRight = new GSMovie (this, "alwyasSunny.mov");} 
-  if (key == '8') {  playerRight = new GSMovie (this, "dareDevil.mov");}
-  if (key == '9') {  playerRight = new GSMovie (this, "naruto.mov");}
-  //movie.loop();
-}
-
-
-
-
-/*
-//I TRIES TO REPLICATE THE WORKING KEYPRESS WITH MY OWN STATEMENTS
-void buttonLeft() {
-    player = new GSMovie (this, "tdogg.mov");
-  }
-
-void buttonRight() { 
-    player = new GSMovie (this, "bunny.mov");
-  }
-  
-void buttonUp () { 
-    player = new GSMovie (this, "transit.mov");
-  }
-  */
