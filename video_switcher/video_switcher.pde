@@ -47,6 +47,9 @@ void setup() {
 }
 void draw() { 
   background(0);
+ 
+  
+  println((indexLeft) + " " + (indexRight));
   
   set(0,0,moviesLeft[indexLeft] ); // draw the left side video on left side of screen
   //image(films[0],0,0);
@@ -57,14 +60,23 @@ void draw() {
   //image(films[0],0,0);
   //image(films[1],0,0);
   //image(films[2],0,0);
+  
+  if (indexLeft != indexRight) {
+    
+    //WHAT IT DOES IF THE VIDEOS DONT MATCH UP
+    fill(255,0,0);;
+    rect(20,20,10,10);
+    
+  }
 } 
  
 void movieEvent(Movie m) { 
   m.read(); 
 } 
 
- int h = indexLeft; 
- int g = indexRight; 
+
+ //int h = indexLeft; 
+ //int g = indexRight; 
  
 static final int getMovieIndexLeft(int k) {
   switch (k) {
@@ -98,6 +110,8 @@ static final int getMovieIndexLeft(int k) {
   default: 
     return indexRight;
   }
+  
+  
 }
 
  
@@ -113,4 +127,25 @@ void keyPressed() {
   if (n >= 0 ){ //& n!= indexLeft) { 
     moviesRight[indexRight].pause(); 
     moviesRight[indexRight = b].loop(); }
-}
+
+    if (keyCode == LEFT) {
+      if (indexLeft < 4) {
+        indexLeft++;
+      }
+        else {
+          indexLeft = 0;
+        }
+      }
+    
+    if (keyCode == RIGHT) {
+      if (indexRight < 4) {
+        indexRight++;
+      }
+        else {
+          indexRight = 0;
+        }
+      }      
+    }
+      
+     
+//print(("LEFT = " + indexLeft + "  " + "RIGHT = " + indexRight)); 
