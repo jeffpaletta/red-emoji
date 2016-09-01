@@ -1,55 +1,37 @@
-import processing.video.*;
+/*import processing.video.*;
 
-int maxmyMovies = 6; // Total # of movies
-int  = 1; // Initial movie to be displayed is the first
-Movie[] myMovies = new Movie[maxmyMovies]; //array of movies
+int maxMoviesLeft = 10;  // total # of left movies
+int maxMoviesRight = 10;  // total # of right movies
+int movieIndexLeft = 0;  // left video to be displayed first
+int movieIndexRight = 0;  // right video to be displayed first
 
-void setup() {
+Movie[] moviesLeft = new Movie[maxMoviesLeft];  // array of left movies
+Movie[] moviesRight = new Movie[maxMoviesLeft];  // array of right movies
 
-  size(640,480);
-
-
-
-  // Loading the movies into the array
-  // Don't forget to put the .mov files in the data folder!
-  for (int i = 1; i < myMovies.length; i ++ ) {
-    myMovies[i] = new Movie(this, i + ".mov");
+void setup(){
+  size(960, 540);
+  //background(255,0,0); //red for debugging
+  
+    for (int i = 0; i < 2; i ++ ) {  //loading movies into the left array
+    moviesLeft[i] = new Movie(this, "left" + i + ".mov");
     //myMovies.read();
-    myMovies[i].loop();
+    moviesLeft[i].loop();
+    
+  } for (int i = 0; i < 2; i ++ ) {  //loading movies into the right array
+    moviesRight[i] = new Movie(this, "right" + i + ".mov");
+    moviesRight[i].loop();
   }
-  
-  // peliculas ();
+  //println(moviesLeft);
 }
-
-
-
-void draw() {
-
-
-image(myMovies[1],0,0, 320, 480); 
-
-/*//println ((pan) );
-  if (key == 'q') {
-    image(myMovies[1],0,0, 400, 400);
-  }
-
-  else if (key == 'w') {
-    image(myMovies[2],0,0, 400, 400);
-  }
-  if (key == 'e') {
-    image(myMovies[3],0,0, 400, 400);
-  }
+void draw(){
+  //image(moviesLeft[0], 0, 0, 480, 540);
+  //image(moviesRight[0], 480, 0, 480, 540);
   
-  if (key == 'f'){
-   // peliculas ();
-  }*/
+  println("LEFT MOVIE LOADED: " + moviesLeft);
+  println("RIGHT MOVIE LOADED: " + moviesRight);
   
-  
+  image(moviesLeft[1], 0, 0, 480, 540);
 }
-
-
-
-/*void peliculas (){
-// image(myMovies[int(random (myMovies.length))],0,0, 400, 400);
- return myMovies [int(random (myMovies.length))];
-}*/
+*/
+import processing.video.*;
+mo
