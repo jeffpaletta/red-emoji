@@ -7,7 +7,7 @@ import ddf.minim.ugens.*;
 
 /* Splitscreen Video Switcher v10
  * Jeff Paletta 2016
- */
+*/
 
 
 import processing.video.Movie;
@@ -20,7 +20,7 @@ String serial;
 Serial port;  
 
 
-AudioPlayer[] player = new AudioPlayer[6];
+AudioPlayer[] player = new AudioPlayer[2];
 Minim minim;
 //FFT fft; 
 float val; 
@@ -40,8 +40,6 @@ static int indexRight = 0;
 
 static final int QTYB = 2; 
 final Movie[] moviesBoth = new Movie[QTYB]; 
-//static int indexRight = 0;
-
 
 void setup() { 
   /*
@@ -58,30 +56,72 @@ void setup() {
   for (int i = 0; i < 2; i++) {
     moviesLeft[i] = new Movie(this, ("video_left_" + i + ".mov"));
     moviesRight[i] = new Movie(this, ("video_right_" + i + ".mov"));
-    moviesBoth[i] = new Movie(this, ("video_both_" + i + ".mov"));
+    moviesBoth[1] = new Movie(this, ("video_both_" + i + ".mov"));
   }
-
+  
   for (int i = 0; i < 2; i++) {
     moviesLeft[i].stop();
     moviesRight[i].stop();
     moviesBoth[i].stop();
   }
-
+   
   moviesLeft[indexLeft].loop();  
   moviesRight[indexRight].loop();
   moviesBoth[indexLeft].loop();
- 
-
+  
   minim = new Minim(this);
   for (int i = 0; i < 2; i++) {
     player[i] = minim.loadFile("audio_" + i + ".mp3");
-  }
+}
 }
 
 void draw() { 
   background(0);
-
-
+  if ((indexLeft == 0) || (indexRight == 0)){
+    if ((indexLeft == 0) && (indexRight == 0)){
+      player[1].stop();
+      player[1].rewind();
+      player[0].play();
+      } else {
+    player[1].play();
+    player[0].play();
+      }
+  }
+   if ((indexLeft != 0) && (indexRight != 0)){ 
+    player[0].stop();
+    player[0].rewind();
+    player[1].play();
+  }
+ 
+ 
+ if ((indexLeft == 1) || (indexRight == 1)){
+   if ((indexLeft == 1) && (indexRight == 1)) {
+     player[0].stop();
+     player[0].rewind();
+     player[1].play();
+   } else {
+     player[0].play();
+     player[1].play();
+   } 
+ } 
+   if ((indexLeft != 1) && (indexRight != 1)){
+     player[1].stop();
+     player[1].rewind();
+   }
+     
+     
+     
+     
+  
+  if ((indexLeft == 1) || (indexRight == 1)){
+    player[0].loop();
+    player[0].play();
+  } else {
+    player[0].stop();
+    player[0].rewind();
+  }
+  
+   
   //print(player);
   /*  
    while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
@@ -102,22 +142,24 @@ void draw() {
   if (indexLeft != indexRight) {
     fill(255, 0, 0);
     rect(20, 20, 10, 10);
-    player[0].play();
-    player[1].play();
-    
+      //for (int i = 0; i < 5; i++){
+        //player[i].pause();
+      //}
+    //player[indexLeft].rewind();
+    //player[indexRight].rewind();
+   // player[indexLeft].play();
+   // player[indexRight].play();
   }
   
-  if (indexLeft == indexRight){
-    player[0].pause();
-    player[1].pause();
-    player[indexLeft].play();
-    moviesLeft[indexLeft].stop();
-    moviesRight[indexRight].stop();
-    moviesBoth[indexLeft].loop();
-    moviesBoth[indexLeft].play();
-    image(moviesBoth[indexLeft], 0, 0, 1920,1080);
+  //if (indexLeft == indexRight) {
+    //for (int i = 0; i < 5; i++){
+       //player[i].pause();
+     // }
+    //player[indexRight].rewind();  
+   // player[indexRight].play();
   }
-}
+
+
 
 void movieEvent(Movie m) { 
   m.read();
@@ -170,7 +212,7 @@ void keyPressed() {
     moviesLeft[indexLeft].stop(); 
     moviesLeft[indexLeft = n].loop();
   }
-
+  
   // right video switcher  
   int u = keyCode, b = getMovieIndexRight(u) ;
 
@@ -180,7 +222,7 @@ void keyPressed() {
   }
 
   if (keyCode == LEFT) {
-    if (indexLeft < 1) {
+    if (indexLeft == 0) {
       indexLeft++;
     } else {
       indexLeft = 0;
@@ -191,17 +233,31 @@ void keyPressed() {
     }
     player[indexRight].play();
   }
+
   if (keyCode == RIGHT) {
     if (indexRight < 1) {
-      indexRight++;
+      indexRight++;  
     } else {
       indexRight = 0;
     }
   }
-  if (keyCode == UP) {
+    //for (int i = 0; i <5; i++) {
+    //  player[i].pause();
+     // player[i].rewind();
+    //}
+    //player[indexRight].play();
+  //}
+  /*if (keyCode == UP) {
     indexLeft = indexRight;
+    //for (int i = 0; i < 5; i++) {
+     // player[indexLeft].pause();
+     // player[indexLeft].rewind();
+      
   }
   if (keyCode == DOWN) {
     indexRight = indexLeft;
-  }
+   // player[indexRight].pause();
+   // player[indexRight].rewind();
+  }*/
+  
 }
