@@ -1,37 +1,55 @@
-/*import processing.video.*;
-
-int maxMoviesLeft = 10;  // total # of left movies
-int maxMoviesRight = 10;  // total # of right movies
-int movieIndexLeft = 0;  // left video to be displayed first
-int movieIndexRight = 0;  // right video to be displayed first
-
-Movie[] moviesLeft = new Movie[maxMoviesLeft];  // array of left movies
-Movie[] moviesRight = new Movie[maxMoviesLeft];  // array of right movies
-
-void setup(){
-  size(960, 540);
-  //background(255,0,0); //red for debugging
+import processing.video.Movie;
+ 
+static final int QTY = 3;
+final Movie[] movies = new Movie[QTY];
+int idx;
+ 
+ 
+void setup() { 
+  size(1440, 900, JAVA2D);
+  frameRate(24);
+  noSmooth();
   
-    for (int i = 0; i < 2; i ++ ) {  //loading movies into the left array
-    moviesLeft[i] = new Movie(this, "left" + i + ".mov");
-    //myMovies.read();
-    moviesLeft[i].loop();
-    
-  } for (int i = 0; i < 2; i ++ ) {  //loading movies into the right array
-    moviesRight[i] = new Movie(this, "right" + i + ".mov");
-    moviesRight[i].loop();
+  movies[0] = new Movie(this, "alwaysSunny.mov");
+  movies[1] = new Movie(this, "ferrisBueller.mov");
+  movies[2] = new Movie(this, "dareDevil.mov");
+ 
+  movies[0].stop();  
+  movies[1].stop();
+  movies[2].stop();
+  
+  movies[idx].loop();
+}
+ 
+void draw() { 
+  background(0);
+  set(0,0,movies[idx] ); 
+  //image(films[0],0,0);
+  //image(films[1],0,0);
+  //image(films[2],0,0);
+} 
+ 
+void movieEvent(Movie m) { 
+  m.read(); 
+} 
+ 
+static final int getMovieIndex(int k) {
+  switch (k) {
+  case 'A': 
+    return 0;
+  case 'S': 
+    return 1;
+  case 'D': 
+    return 2;
+  default: 
+    return -1;
   }
-  //println(moviesLeft);
 }
-void draw(){
-  //image(moviesLeft[0], 0, 0, 480, 540);
-  //image(moviesRight[0], 480, 0, 480, 540);
-  
-  println("LEFT MOVIE LOADED: " + moviesLeft);
-  println("RIGHT MOVIE LOADED: " + moviesRight);
-  
-  image(moviesLeft[1], 0, 0, 480, 540);
+ 
+void keyPressed() {
+  int k = keyCode, n = getMovieIndex(k) ;
+ 
+  if (n >= 0 ){ //& n!= idx) { 
+    movies[idx].pause(); 
+    movies[idx = n].loop(); }
 }
-*/
-import processing.video.*;
-mo
