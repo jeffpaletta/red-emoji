@@ -1,65 +1,63 @@
-import codeanticode.gsvideo.*;
+import processing.video.*;
 
-//import fullscreen.*; 
-//import processing.opengl.*;
+int maxMovies= 6;
+int rand = int(random(maxMovies)); 
 
-GSMovie[] movies = new GSMovie[5];
+Movie[] myMovies=new Movie[maxMovies] ;
 
-GSMovie alwaysSunny;
+ArrayList<PVector> moviePos      = new ArrayList<PVector>();
+ArrayList<Movie>   moviesPlaying = new ArrayList<Movie>();
 
-//GSMovie bg_movie = new GSMovie;
-
-//SoftFullScreen fs; 
-
-int w = 640;
-int h = 480;
-int threshold = 80;
-
-boolean find = true;
+Movie firstClipMovie;
 
 
 void setup() {
+   size (1100, 600);
 
-  size(960, 540, P2D); ///checken zonder p2d
+  for (int i = 0; i < myMovies.length; i ++ ) {
+    myMovies[i] = new Movie(this, "alwaysSunny.mov");
+  }
 
+  firstClipMovie = new Movie(this, "naruto.mov");
+  firstClipMovie.loop();
 
- // fs = new SoftFullScreen(this, 1); 
+  moviesPlaying.add(firstClipMovie);
+  moviePos. add(new PVector (0, 0));
 
-  // enter fullscreen mode
-  //fs.enter();
-
-
-
-  alwaysSunny = new GSMovie(this, "alwaysSunny.mov");
-  
-  movies[0] = new GSMovie(this, "dareDevil.mov");
-  movies[1] = new GSMovie(this, "ferrisBueller.mov");
-  movies[2] = new GSMovie(this, "naruto.mov");
-  movies[3] = new GSMovie(this, "pumpingIron.mov");
-  movies[4] = new GSMovie(this, "kitchenNightmares.mov");
-
-
-println(movies[0].width+" "+movies[0].height);
-
-  alwaysSunny.loop();
-
-  movies[0].play();
-  movies[1].play();
-  movies[2].play();
-  movies[3].play();
-  movies[4].play();
-  
-   // movies[0].goToBeginning();
-    //movies[0].pause();
-    //movies[1].goToBeginning();
-    //movies[2].goToBeginning();
-    //movies[3].goToBeginning();
-   // movies[4].goToBeginning();
- 
-  
-  
+  background(0);
 }
 
-void movieEvent(GSMovie movies) {
-  movies.read();
+
+
+void mouseReleased() {
+  rand = int(random(maxMovies));
+
+  //store position
+  moviePos.add(new PVector(mouseX, mouseY));
+
+  // loop movie and add to playing list 
+  moviesPlaying.add(myMovies[rand]);
+  moviesPlaying.get(moviesPlaying.size()-1).loop();
+}
+
+void draw() {
+  background(0);
+  tint(255, 155);
+
+  for (int i = 0; i< moviesPlaying.size(); i++ ) {    
+    // temp vars to keep things neat :)
+    Movie m = moviesPlaying.get(i);
+    float x = moviePos.get(i).x;
+    float y = moviePos.get(i).y;
+
+    
+    if (m.available())
+      m.read();
+
+    image(m, x, y);
+  }
+  
+  //frameRate
+ 
+  surface.setTitle("fps" + frameRate);
 }
