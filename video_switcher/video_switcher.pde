@@ -3,16 +3,20 @@ import processing.video.Movie;
 static final int QTY = 3;
 final Movie[] movies = new Movie[QTY];
 int idx;
- 
+
+Movie finalRight;
  
 void setup() { 
-  size(1440, 900, JAVA2D);
+  size(960, 540, JAVA2D);
   frameRate(24);
   noSmooth();
   
-  movies[0] = new Movie(this, "alwaysSunny.mov");
-  movies[1] = new Movie(this, "ferrisBueller.mov");
-  movies[2] = new Movie(this, "dareDevil.mov");
+  finalRight = new Movie(this, "right1.mov");
+  finalRight.loop();
+  
+  movies[0] = new Movie(this, "left1.mov");
+  movies[1] = new Movie(this, "left2.mov");
+  movies[2] = new Movie(this, "left3.mov");
  
   movies[0].stop();  
   movies[1].stop();
@@ -23,6 +27,8 @@ void setup() {
  
 void draw() { 
   background(0);
+  set(480,0,finalRight);
+  
   set(0,0,movies[idx] ); 
   //image(films[0],0,0);
   //image(films[1],0,0);
