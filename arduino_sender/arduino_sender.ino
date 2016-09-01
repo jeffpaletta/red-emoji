@@ -44,26 +44,41 @@ void loop() {
     val = Serial.read(); // read it and store it in val
 
   }
-  if (val == '1')
+}
+ /* if (val == '1')
   { // If 1 was received
     for (pos = 60; pos >= 0; pos -= 1) // goes from 180 degrees to 0 degrees
     {
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
       delay(5);                       // waits 15ms for the servo to reach the position
     } 
-  }else {
+  }
+  else {
+  }
+  if (val == '2')
+  { // If 1 was received
+    for (pos = 60; pos >= 0; pos -= 1) // goes from 180 degrees to 0 degrees
+    {
+      myservo.write(pos);              // tell servo to go to position in variable 'pos'
+      delay(5);                       // waits 15ms for the servo to reach the position
+    } 
+  }
+  else {
+  }
+  }*/
+  /*else {
       for (pos = 0; pos <= 0; pos += 1) // goes from 0 degrees to 180 degrees
       { // in steps of 1 degree
         myservo.write(pos);              // tell servo to go to position in variable 'pos'
         delay(5);                       // waits 15ms for the servo to reach the position
       }
     }
-
+*/
 
     /*digitalWrite(ledPin, HIGH); // turn the LED on
       } else {
       digitalWrite(ledPin, LOW); // otherwise turn it off
       }
       delay(10); // Wait 10 milliseconds for next reading*/
-  }
+  
 
