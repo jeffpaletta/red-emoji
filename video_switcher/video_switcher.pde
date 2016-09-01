@@ -1,43 +1,47 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+
 /* Splitscreen Video Switcher v10
  * Jeff Paletta 2016
- *
- *
- * CONTROLS:
- * left arrow   =   cycle through videos on the left side
- * right arrow  =   cycle through videos on the right side
- *
- *
- * NOTES:
- * red square appears in top left corner if videos dont match up
- * (this is just a placeholder for now)
- *
- *
- * theres a bug where videos dont load the first time theyre called out.
- * press each arrow key a few times until the videos finally appear. 
- * it should work normally after that.
- *
- * 20 videos (10 + 10) are set up, but i only have 12 (6 + 6) set to run
- * because any more caused too much lag. 
  */
 
+
 import processing.video.Movie;
-import processing.serial.*; //import the Serial library
+import processing.serial.*;
+import processing.sound.*;
 
-int end = 10;    // the number 10 is ASCII for linefeed (end of serial.println), later we will look for this to break up individual messages
-String serial;   // declare a new string called 'serial' . A string is a sequence of characters (data type know as "char")
-Serial port;  // The serial port, this is a new instance of the Serial class (an Object)
 
-static final int QTYL = 6;  // quantity, total number of videos in the LEFT array
-final Movie[] moviesLeft = new Movie[QTYL];  // setting up an array for LEFT-side videos with (QTYL) items
+int end = 10; 
+String serial;  
+Serial port;  
+
+
+AudioPlayer[] player = new AudioPlayer[6];
+Minim minim;
+//FFT fft; 
+float val; 
+int val2; 
+int bufferSize = 8; 
+int fftSize = floor(bufferSize*.9)+1; 
+int count=0; 
+
+
+static final int QTYL = 2; 
+final Movie[] moviesLeft = new Movie[QTYL];  
 static int indexLeft = 0;
 
-static final int QTYR = 6;  // quantity, total number of videos in the RIGHT array
-final Movie[] moviesRight = new Movie[QTYR];  // setting up an array for RIGHT-side videos with (QTYR) items
-static int indexRight = 3;
+static final int QTYR = 2; 
+final Movie[] moviesRight = new Movie[QTYR]; 
+static int indexRight = 0;
 
-static final int QTYB = 6;  
+static final int QTYB = 2; 
 final Movie[] moviesBoth = new Movie[QTYB]; 
-//static int indexBoth;
+//static int indexRight = 0;
+
 
 void setup() { 
   /*
@@ -49,29 +53,36 @@ void setup() {
 
   size(1920, 1080, JAVA2D);
   frameRate(24);
-  noSmooth();  // helps cut down on framerate issues
+  noSmooth();  
 
-  // Loads videos into respective arrays
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 2; i++) {
     moviesLeft[i] = new Movie(this, ("video_left_" + i + ".mov"));
     moviesRight[i] = new Movie(this, ("video_right_" + i + ".mov"));
-    //moviesBoth[i] = new Movie(this, ("video_both_" + i + ".mov"));
+    moviesBoth[i] = new Movie(this, ("video_both_" + i + ".mov"));
   }
-  
-  // Stops all videos from autoplaying at once
-  for (int i = 0; i < 6; i++) {
+
+  for (int i = 0; i < 2; i++) {
     moviesLeft[i].stop();
     moviesRight[i].stop();
     moviesBoth[i].stop();
   }
-   
-  // Makes videos auto-replay when theyre finished 
+
   moviesLeft[indexLeft].loop();  
   moviesRight[indexRight].loop();
   moviesBoth[indexLeft].loop();
+ 
+
+  minim = new Minim(this);
+  for (int i = 0; i < 2; i++) {
+    player[i] = minim.loadFile("audio_" + i + ".mp3");
+  }
 }
+
 void draw() { 
   background(0);
+
+
+  //print(player);
   /*  
    while (port.available() > 0) { //as long as there is data coming from serial port, read it and store it 
    serial = port.readStringUntil(end);
@@ -81,73 +92,37 @@ void draw() {
    println(a[0]); //print Value1 (in cell 1 of Array - remember that arrays are zero-indexed)    
    }
    */
-  //prints currently active/playing videos in the console
   println((indexLeft) + " " + (indexRight));
 
-  // draw the left side video on left side of screen
   set(0, 0, moviesLeft[indexLeft] ); 
-
-  // draw the right side video on right side of screen
   set(960, 0, moviesRight[indexRight] ); 
-  //image(films[0],0,0);
-  //image(films[1],0,0);
-  //image(films[2],0,0);
+  player[indexLeft].play();
+  player[indexRight].play();
 
-  // checks if the videos match up
   if (indexLeft != indexRight) {
-
-    // IF THEY DONT MATCH, DO THIS (CONTROLS RED LIGHT?)
     fill(255, 0, 0);
-    ;
     rect(20, 20, 10, 10);
+    player[0].play();
+    player[1].play();
+    
   }
   
-  if (indexLeft == indexRight) {
+  if (indexLeft == indexRight){
+    player[0].pause();
+    player[1].pause();
+    player[indexLeft].play();
     moviesLeft[indexLeft].stop();
     moviesRight[indexRight].stop();
-    
-    set(0,0,moviesBoth[indexLeft]);
     moviesBoth[indexLeft].loop();
+    moviesBoth[indexLeft].play();
+    image(moviesBoth[indexLeft], 0, 0, 1920,1080);
   }
-    else {
-      moviesBoth[indexLeft].stop();
-      
-      set(960, 0, moviesRight[indexRight] );
-      set(0, 0, moviesLeft[indexLeft] );
-      
-    
+}
 
-  //fixes video seam lag but heavy on GPU
-  /*for (int i = 0; i < 3; i++) {
-    if (indexLeft == i && indexRight == i) {
-      moviesLeft[indexLeft].stop();
-      moviesRight[indexRight].stop();
-      set(0, 0, moviesBoth[1] );
-      moviesBoth[1].loop();
-      rect(50, 50, 50, 50);
-    }*/
-  
-  /*if (indexLeft == 0 && indexRight == 0) {
-    moviesLeft[indexLeft].stop();
-    moviesRight[indexRight].stop();
-    set(0, 0, moviesBoth[0] );
-    moviesBoth[0].loop();
-    rect(50, 50, 50, 50);
-  }
-  */
- /* if (indexLeft == 2 && indexRight == 2) {
-    moviesLeft[indexLeft].stop();
-    moviesRight[indexRight].stop();
-    set(0, 0, moviesBoth[2] );
-    moviesBoth[2].loop();
-    rect(50, 50, 50, 50);
-  }*/
-} 
-    }
 void movieEvent(Movie m) { 
   m.read();
 } 
-// individual left video controls for debugging --> keys 1,2,3,4,5
+
 static final int getMovieIndexLeft(int k) {
   switch (k) {
   case '1': 
@@ -166,7 +141,6 @@ static final int getMovieIndexLeft(int k) {
     return indexLeft;
   }
 }
-// individual right video controls for debugging --> keys 6,7,8,9,0
 static final int getMovieIndexRight(int u) {
   switch (u) {
   case '1': 
@@ -185,12 +159,14 @@ static final int getMovieIndexRight(int u) {
     return indexRight;
   }
 }
+
+
 void keyPressed() {
 
   // left video switcher
   int k = keyCode, n = getMovieIndexLeft(k) ;
 
-  if (n >= 0 ) { //& n!= indexLeft) { 
+  if (n >= 0 ) {  
     moviesLeft[indexLeft].stop(); 
     moviesLeft[indexLeft = n].loop();
   }
@@ -198,27 +174,28 @@ void keyPressed() {
   // right video switcher  
   int u = keyCode, b = getMovieIndexRight(u) ;
 
-  if (n >= 0 ) { //& n!= indexLeft) { 
+  if (n >= 0 ) { 
     moviesRight[indexRight].stop(); 
     moviesRight[indexRight = b].loop();
   }
 
-  // single button cycling for left videos (reassign imput to big red button)
   if (keyCode == LEFT) {
-    // dont touch this part; needed to reset when end of array is reached
-    if (indexLeft < 2) {
+    if (indexLeft < 1) {
       indexLeft++;
     } else {
       indexLeft = 0;
     }
+    for (int i = 0; i <1; i++) {
+      player[i].pause();
+      player[i].rewind();
+    }
+    player[indexRight].play();
   }
-  // single button cycling for right videos (reassign imput to big red button)
   if (keyCode == RIGHT) {
-    // dont touch this part; needed to reset when end of array is reached
-    if (indexRight < 5) {
+    if (indexRight < 1) {
       indexRight++;
     } else {
-      indexRight = 3;
+      indexRight = 0;
     }
   }
   if (keyCode == UP) {
