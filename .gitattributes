@@ -1,0 +1,16 @@
+video_left_5.mov filter=lfs diff=lfs merge=lfs -text
+video_right_5.mov filter=lfs diff=lfs merge=lfs -text
+alwaysSunny.mov filter=lfs diff=lfs merge=lfs -text
+dareDevil.mov filter=lfs diff=lfs merge=lfs -text
+ferrisBueller.mov filter=lfs diff=lfs merge=lfs -text
+naruto.mov filter=lfs diff=lfs merge=lfs -text
+fake.mov filter=lfs diff=lfs merge=lfs -text
+1.mov filter=lfs diff=lfs merge=lfs -text
+3.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/3.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/1.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/naruto.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/ferrisBueller.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/dareDevil.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/video_right_5.mov filter=lfs diff=lfs merge=lfs -text
+video_switcher/data/video_left_5.mov filter=lfs diff=lfs merge=lfs -text
